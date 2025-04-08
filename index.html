@@ -45,16 +45,22 @@
       margin-bottom: 0.5rem;
     }
     .progress-bar {
-      height: 20px;
+      height: 24px;
       background: #e0e0e0;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
+      position: relative;
     }
     .progress-bar-inner {
       height: 100%;
       background: #4caf50;
       width: 0%;
       transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
     }
     ul {
       list-style: none;
@@ -127,6 +133,7 @@
       list.innerHTML = "";
       progressText.textContent = "";
       progressBar.style.width = "0%";
+      progressBar.textContent = "";
 
       if (!idx) return;
 
@@ -135,8 +142,9 @@
       let selesai = siswa.hafalan.filter(Boolean).length;
       let persen = Math.round((selesai / total) * 100);
 
-      progressText.textContent = `${selesai} surat (${persen}%)`;
+      progressText.textContent = `Sudah Setor Hafalan ${selesai} Surat`;
       progressBar.style.width = `${persen}%`;
+      progressBar.textContent = `${persen}%`;
 
       surahHeaders.forEach((surah, i) => {
         const li = document.createElement("li");
