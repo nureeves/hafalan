@@ -47,6 +47,9 @@
     .progress-text.red {
       color: red;
     }
+    .progress-text.green {
+      color: green;
+    }
     .progress-bar {
       height: 24px;
       background: #e0e0e0;
@@ -134,7 +137,7 @@
       const progressBar = document.getElementById("progressBar");
       list.innerHTML = "";
       progressText.textContent = "";
-      progressText.classList.remove("red");
+      progressText.classList.remove("red", "green");
       progressBar.style.width = "0%";
       progressBar.textContent = "";
 
@@ -148,6 +151,11 @@
       if (selesai === 0) {
         progressText.textContent = `Belum Setor Hafalan`;
         progressText.classList.add("red");
+      } else if (persen === 100) {
+        progressText.textContent = `Selamat, kamu sudah menyelesaikan Ujian Hafalan Al-Quran Juz Ke-30`;
+        progressText.classList.add("green");
+        progressBar.style.width = `100%`;
+        progressBar.textContent = `100%`;
       } else {
         progressText.textContent = `Sudah Setor Hafalan ${selesai} Surat`;
         progressBar.style.width = `${persen}%`;
