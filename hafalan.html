@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Progres Hafalan Juz 30</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f4f8;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    select, label {
+      width: 100%;
+      margin: 1rem 0;
+      padding: 0.5rem;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      padding: 0.5rem;
+      border-bottom: 1px solid #ccc;
+    }
+    .done {
+      background-color: #d4edda;
+      color: #155724;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Progres Hafalan Juz 30</h2>
+    <label for="student">Pilih Nama:</label>
+    <select id="student">
+      <option value="">-- Memuat data... --</option>
+    </select>
+    <ul id="surahList"></ul>
+  </div>  <script>
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpOWEh7dh7rvihlonkwPCMQnchwzbQbss-2t1bL-Ql0F_0sofzBDqNPBPDTpa2B56893EwamUDJBs5/pub?gid=0&single=true&output=csv";
+
+    let students = [];
+    let surahHeaders = [];
+
+    fetch(SHEET_URL)
+      .then(res => res.text())
+      .then(csv => {
+        const rows = csv.trim().split("\n").map(row => row.split(","));
+        surahHeaders = rows[0].slice(1);
+        students = rows.slice(1).map(row => ({
+          name: row[0],
+          hafalan: row.slice(1).map(val => val.trim() === "1")
+        }));
+
+        const select = document.getElementById("student");
+        select.innerHTML = `<option value="">-- Pilih --</option>` +
+          students.map((s, i) => `<option value="${i}">${s.name}</option>`).join("");
+      });
+
+    document.getElementById("student").addEventListener("change", function () {
+      const idx = this.value;
+      const list = document.getElementById("surahList");
+      list.innerHTML = "";
+
+      if (!idx) return;
+
+      const siswa = students[idx];
+      surahHeaders.forEach((surah, i) => {
+        const li = document.createElement("li");
+        li.textContent = surah;
+        if (siswa.hafalan[i]) li.classList.add("done");
+        list.appendChild(li);
+      });
+    });
+  </script></body>
+</html>
