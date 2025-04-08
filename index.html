@@ -44,6 +44,9 @@
       font-weight: bold;
       margin-bottom: 0.5rem;
     }
+    .progress-text.red {
+      color: red;
+    }
     .progress-bar {
       height: 24px;
       background: #e0e0e0;
@@ -97,7 +100,7 @@
       <option value="">-- Memuat data... --</option>
     </select>
     <div id="progress" class="progress">
-      <div class="progress-text"></div>
+      <div class="progress-text" id="progressText"></div>
       <div class="progress-bar">
         <div class="progress-bar-inner" id="progressBar"></div>
       </div>
@@ -127,11 +130,11 @@
     document.getElementById("student").addEventListener("change", function () {
       const idx = this.value;
       const list = document.getElementById("surahList");
-      const progress = document.getElementById("progress");
-      const progressText = document.querySelector(".progress-text");
+      const progressText = document.getElementById("progressText");
       const progressBar = document.getElementById("progressBar");
       list.innerHTML = "";
       progressText.textContent = "";
+      progressText.classList.remove("red");
       progressBar.style.width = "0%";
       progressBar.textContent = "";
 
@@ -142,9 +145,14 @@
       let selesai = siswa.hafalan.filter(Boolean).length;
       let persen = Math.round((selesai / total) * 100);
 
-      progressText.textContent = `Sudah Setor Hafalan ${selesai} Surat`;
-      progressBar.style.width = `${persen}%`;
-      progressBar.textContent = `${persen}%`;
+      if (selesai === 0) {
+        progressText.textContent = `Belum Setor Hafalan`;
+        progressText.classList.add("red");
+      } else {
+        progressText.textContent = `Sudah Setor Hafalan ${selesai} Surat`;
+        progressBar.style.width = `${persen}%`;
+        progressBar.textContent = `${persen}%`;
+      }
 
       surahHeaders.forEach((surah, i) => {
         const li = document.createElement("li");
