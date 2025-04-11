@@ -1,14 +1,11 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Progres Hafalan Juz 30</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     body {
       font-family: sans-serif;
       background: #f0f4f8;
@@ -23,35 +20,17 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h2 {
-      text-align: center;
-      font-size: 1.5rem;
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
+    h2 { text-align: center; font-size: 1.5rem; }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
     select {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.5rem;
-      font-size: 1rem;
+      width: 100%; padding: 0.5rem; margin-top: 0.5rem; font-size: 1rem;
     }
     .progress {
-      margin-top: 1rem;
-      text-align: center;
+      margin-top: 1rem; text-align: center;
     }
-    .progress-text {
-      font-weight: bold;
-      margin-bottom: 0.5rem;
-    }
-    .progress-text.red {
-      color: red;
-    }
-    .progress-text.green {
-      color: green;
-    }
+    .progress-text { font-weight: bold; margin-bottom: 0.5rem; }
+    .progress-text.red { color: red; }
+    .progress-text.green { color: green; }
     .progress-bar {
       height: 24px;
       background: #e0e0e0;
@@ -84,9 +63,7 @@
       background-color: #d4edda;
       color: #155724;
     }
-    canvas {
-      margin-top: 2rem;
-    }
+    canvas { margin-top: 2rem; }
     .belum-setor {
       margin-top: 2rem;
       background: #ffeaea;
@@ -94,19 +71,11 @@
       border-radius: 10px;
       color: #c62828;
     }
-    .belum-setor h3 {
-      margin-top: 0;
-    }
+    .belum-setor h3 { margin-top: 0; }
     @media (max-width: 600px) {
-      .container {
-        padding: 1rem;
-      }
-      h2 {
-        font-size: 1.25rem;
-      }
-      select, li {
-        font-size: 0.95rem;
-      }
+      .container { padding: 1rem; }
+      h2 { font-size: 1.25rem; }
+      select, li { font-size: 0.95rem; }
     }
   </style>
 </head>
@@ -129,9 +98,7 @@
       <h3>Belum Setor Sama Sekali:</h3>
       <ul id="belumList"></ul>
     </div>
-  </div>
-
-  <script>
+  </div>  <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpOWEh7dh7rvihlonkwPCMQnchwzbQbss-2t1bL-Ql0F_0sofzBDqNPBPDTpa2B56893EwamUDJBs5/pub?gid=0&single=true&output=csv";
 
     let students = [];
@@ -140,7 +107,7 @@
     fetch(SHEET_URL)
       .then(res => res.text())
       .then(csv => {
-        const rows = csv.trim().split("\\n").map(row => row.split(","));
+        const rows = csv.trim().split("\n").map(row => row.split(","));
         surahHeaders = rows[0].slice(1);
         students = rows.slice(1).map(row => ({
           name: row[0],
@@ -148,8 +115,8 @@
         }));
 
         const select = document.getElementById("student");
-        select.innerHTML = `<option value=\"\">-- Pilih --</option>` +
-          students.map((s, i) => `<option value=\"${i}\">${s.name}</option>`).join("");
+        select.innerHTML = `<option value="">-- Pilih --</option>` +
+          students.map((s, i) => `<option value="${i}">${s.name}</option>`).join("");
 
         // PIE CHART
         let totalSiswa = students.length;
@@ -190,10 +157,7 @@
           }
         });
 
-        // Daftar siswa yang belum setor sama sekali
-        const belumList = students.filter(s => !s.hafalan.some(Boolean))
-                                  .map(s => s.name)
-                                  .sort();
+        const belumList = students.filter(s => !s.hafalan.some(Boolean)).map(s => s.name).sort();
         if (belumList.length > 0) {
           const belumListEl = document.getElementById("belumList");
           const wrapper = document.getElementById("belumSetorList");
@@ -243,6 +207,5 @@
         list.appendChild(li);
       });
     });
-  </script>
-</body>
+  </script></body>
 </html>
