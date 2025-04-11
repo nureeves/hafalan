@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -128,7 +129,10 @@
       <h3>Belum Setor Sama Sekali:</h3>
       <ul id="belumList"></ul>
     </div>
-  </div> <script>
+  </div>
+
+
+  <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpOWEh7dh7rvihlonkwPCMQnchwzbQbss-2t1bL-Ql0F_0sofzBDqNPBPDTpa2B56893EwamUDJBs5/pub?gid=0&single=true&output=csv";
 
 
@@ -139,7 +143,7 @@
     fetch(SHEET_URL)
       .then(res => res.text())
       .then(csv => {
-        const rows = csv.trim().split("\n").map(row => row.split(","));
+        const rows = csv.trim().split("\\n").map(row => row.split(","));
         surahHeaders = rows[0].slice(1);
         students = rows.slice(1).map(row => ({
           name: row[0],
@@ -148,26 +152,27 @@
 
 
         const select = document.getElementById("student");
-        select.innerHTML = `<option value="">-- Pilih --</option>` +
-          students.map((s, i) => `<option value="${i}">${s.name}</option>`).join("");
+        select.innerHTML = `<option value=\"\">-- Pilih --</option>` +
+          students.map((s, i) => `<option value=\"${i}\">${s.name}</option>`).join("");
 
 
         // PIE CHART
         let totalSiswa = students.length;
-        let sudahSetor = students.filter(s => s.hafalan.some(Boolean)).length;
-        let belumSetor = totalSiswa - sudahSetor;
+        let setorPenuh = students.filter(s => s.hafalan.every(Boolean)).length;
+        let sudahSetor = students.filter(s => s.hafalan.some(Boolean) && !s.hafalan.every(Boolean)).length;
+        let belumSetor = totalSiswa - (sudahSetor + setorPenuh);
 
 
         const ctx = document.getElementById('pieChart').getContext('2d');
         new Chart(ctx, {
           type: 'pie',
           data: {
-            labels: ['Sudah Setor', 'Belum Setor'],
+            labels: ['Sudah Setor 1 Juz', 'Sudah Setor Sebagian', 'Belum Setor'],
             datasets: [{
               label: 'Persentase Hafalan',
-              data: [sudahSetor, belumSetor],
-              backgroundColor: ['#4caf50', '#f44336'],
-              borderColor: ['#ffffff', '#ffffff'],
+              data: [setorPenuh, sudahSetor, belumSetor],
+              backgroundColor: ['#64b5f6', '#4caf50', '#f44336'],
+              borderColor: ['#ffffff', '#ffffff', '#ffffff'],
               borderWidth: 2
             }]
           },
@@ -180,7 +185,7 @@
               tooltip: {
                 callbacks: {
                   label: function(context) {
-                    let total = sudahSetor + belumSetor;
+                    let total = setorPenuh + sudahSetor + belumSetor;
                     let value = context.raw;
                     let percent = Math.round((value / total) * 100);
                     return `${context.label}: ${value} siswa (${percent}%)`;
@@ -192,7 +197,7 @@
         });
 
 
-        // Nama-nama yang belum setor sama sekali
+        // Daftar siswa yang belum setor sama sekali
         const belumList = students.filter(s => !s.hafalan.some(Boolean))
                                   .map(s => s.name)
                                   .sort();
@@ -250,5 +255,6 @@
         list.appendChild(li);
       });
     });
-  </script></body>
+  </script>
+</body>
 </html>
