@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Progres Hafalan Juz 30</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -64,14 +65,20 @@
       color: #155724;
     }
     canvas { margin-top: 2rem; }
-    .belum-setor {
+    .list-box {
       margin-top: 2rem;
-      background: #ffeaea;
       padding: 1rem;
       border-radius: 10px;
+    }
+    .belum-setor {
+      background: #ffeaea;
       color: #c62828;
     }
-    .belum-setor h3 { margin-top: 0; }
+    .sudah-juz {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    .list-box h3 { margin-top: 0; }
     @media (max-width: 600px) {
       .container { padding: 1rem; }
       h2 { font-size: 1.25rem; }
@@ -93,11 +100,16 @@
       </div>
     </div>
     <ul id="surahList"></ul>
-    <canvas id="pieChart" width="400" height="400"></canvas>
-    <div id="belumSetorList" class="belum-setor" style="display: none;">
-      <h3>Belum Setor Sama Sekali:</h3>
-      <ul id="belumList"></ul>
-    </div>
+    <canvas id="pieChart" width="400" height="400"></canvas><div id="sudahSetorJuz" class="list-box sudah-juz" style="display: none;">
+  <h3>Sudah Setor 1 Juz:</h3>
+  <ul id="juzList"></ul>
+</div>
+
+<div id="belumSetorList" class="list-box belum-setor" style="display: none;">
+  <h3>Belum Setor Sama Sekali:</h3>
+  <ul id="belumList"></ul>
+</div>
+
   </div>  <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRpOWEh7dh7rvihlonkwPCMQnchwzbQbss-2t1bL-Ql0F_0sofzBDqNPBPDTpa2B56893EwamUDJBs5/pub?gid=0&single=true&output=csv";
 
@@ -120,9 +132,9 @@
 
         // PIE CHART
         let totalSiswa = students.length;
-        let setorPenuh = students.filter(s => s.hafalan.every(Boolean)).length;
-        let sudahSetor = students.filter(s => s.hafalan.some(Boolean) && !s.hafalan.every(Boolean)).length;
-        let belumSetor = totalSiswa - (sudahSetor + setorPenuh);
+        let setorPenuh = students.filter(s => s.hafalan.every(Boolean));
+        let sudahSetor = students.filter(s => s.hafalan.some(Boolean) && !s.hafalan.every(Boolean));
+        let belumSetor = students.filter(s => !s.hafalan.some(Boolean));
 
         const ctx = document.getElementById('pieChart').getContext('2d');
         new Chart(ctx, {
@@ -130,23 +142,28 @@
           data: {
             labels: ['Sudah Setor 1 Juz', 'Sudah Setor Sebagian', 'Belum Setor'],
             datasets: [{
-              label: 'Persentase Hafalan',
-              data: [setorPenuh, sudahSetor, belumSetor],
+              data: [setorPenuh.length, sudahSetor.length, belumSetor.length],
               backgroundColor: ['#64b5f6', '#4caf50', '#f44336'],
-              borderColor: ['#ffffff', '#ffffff', '#ffffff'],
+              borderColor: ['#fff', '#fff', '#fff'],
               borderWidth: 2
             }]
           },
           options: {
             responsive: true,
             plugins: {
-              legend: {
-                position: 'bottom'
+              datalabels: {
+                color: '#fff',
+                font: { weight: 'bold', size: 14 },
+                formatter: (value, context) => {
+                  const total = setorPenuh.length + sudahSetor.length + belumSetor.length;
+                  return `${Math.round(value / total * 100)}%`;
+                }
               },
+              legend: { position: 'bottom' },
               tooltip: {
                 callbacks: {
                   label: function(context) {
-                    let total = setorPenuh + sudahSetor + belumSetor;
+                    let total = setorPenuh.length + sudahSetor.length + belumSetor.length;
                     let value = context.raw;
                     let percent = Math.round((value / total) * 100);
                     return `${context.label}: ${value} siswa (${percent}%)`;
@@ -154,14 +171,23 @@
                 }
               }
             }
-          }
+          },
+          plugins: [ChartDataLabels]
         });
 
-        const belumList = students.filter(s => !s.hafalan.some(Boolean)).map(s => s.name).sort();
-        if (belumList.length > 0) {
+        // Daftar siswa sudah setor 1 juz
+        if (setorPenuh.length > 0) {
+          const juzListEl = document.getElementById("juzList");
+          const wrapper = document.getElementById("sudahSetorJuz");
+          juzListEl.innerHTML = setorPenuh.map(s => s.name).sort().map(n => `<li>${n}</li>`).join("");
+          wrapper.style.display = "block";
+        }
+
+        // Daftar belum setor
+        if (belumSetor.length > 0) {
           const belumListEl = document.getElementById("belumList");
           const wrapper = document.getElementById("belumSetorList");
-          belumListEl.innerHTML = belumList.map(nama => `<li>${nama}</li>`).join("");
+          belumListEl.innerHTML = belumSetor.map(s => s.name).sort().map(n => `<li>${n}</li>`).join("");
           wrapper.style.display = "block";
         }
       });
